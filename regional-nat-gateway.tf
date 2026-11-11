@@ -1,30 +1,29 @@
 # regional-nat-gateway.tf
 
 resource "aws_nat_gateway" "regional" {
-  # Regional mode: one NAT Gateway for the whole VPC, no subnet, no EIP to manage.
-  # It expands into every AZ that has network interfaces (automatic mode).
+  vpc_id = aws_vpc.main.id
+
   availability_mode = "regional"
-  vpc_id            = aws_vpc.main.id
 
   tags = {
-    Name    = "${local.env}-nat-${local.reg}-regional-nat-gateway"
+    Name    = "${local.env}-ngtw-${local.reg}-regional"
     Service = "natGateway"
     Purpose = "regionalNatGateway"
   }
 
-  # A Regional NAT Gateway still needs an internet gateway on the VPC.
   depends_on = [aws_internet_gateway.main]
 }
 
-# --- Private subnet C: egress through the Regional NAT Gateway ---
+### private subnet c • egress through the regional nat gateway
 
 resource "aws_subnet" "private_rnat" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = cidrsubnet(var.vpc_cidr, 8, 30) # 10.0.30.0/24
+  vpc_id = aws_vpc.main.id
+
+  cidr_block        = cidrsubnet(var.vpc_cidr, 8, 30)
   availability_zone = local.az
 
   tags = {
-    Name    = "${local.env}-subnet-${local.reg}-private-regional-nat-gateway"
+    Name    = "${local.env}-sb-${local.az_naming}-private-rnat"
     Service = "subnet"
     Purpose = "regionalNatGateway"
   }
@@ -39,7 +38,7 @@ resource "aws_route_table" "private_rnat" {
   }
 
   tags = {
-    Name    = "${local.env}-rt-${local.reg}-private-regional-nat-gateway"
+    Name    = "${local.env}-rt-${local.az_naming}-private-rnat"
     Service = "routeTable"
     Purpose = "regionalNatGateway"
   }

@@ -2,17 +2,17 @@
 
 output "nat_gateway_id" {
   description = "ID of the zonal NAT Gateway"
-  value       = aws_nat_gateway.main.id
+  value       = aws_nat_gateway.zonal.id
 }
 
 output "nat_gateway_public_ip" {
   description = "Public IP private subnet A egresses from (zonal NAT Gateway)"
-  value       = aws_eip.nat_gateway.public_ip
+  value       = aws_eip.zonal_nat_gateway.public_ip
 }
 
 output "nat_instance_id" {
   description = "Instance ID of the NAT instance"
-  value       = aws_instance.nat.id
+  value       = aws_instance.nat_instance.id
 }
 
 output "nat_instance_public_ip" {

@@ -2,6 +2,7 @@
 # Ask each test instance which public IP it egresses from, using SSM Run Command,
 # and compare it with the IP of the NAT its subnet is supposed to use.
 # Run from anywhere after `terraform apply`. Requires: aws CLI v2, jq.
+# The names below are the keys of local.test_subnets in test-instances.tf: rename one, rename both.
 # Works with the bash 3.2 that ships with macOS.
 set -euo pipefail
 
@@ -14,17 +15,17 @@ rnat_ips=$(terraform output -json regional_nat_gateway_public_ips | jq -r '[.[]]
 
 expected_for() {
   case "$1" in
-    via-nat-gateway) echo "$gw_ip" ;;
+    via-zonal-nat-gateway) echo "$gw_ip" ;;
     via-nat-instance) echo "$inst_ip" ;;
     via-regional-nat) echo "${rnat_ips:-pending}" ;;
   esac
 }
 
-row() { printf '%-18s %-16s %-16s %s\n' "$@"; }
+row() { printf '%-22s %-16s %-16s %s\n' "$@"; }
 
 status=0
 row "SUBNET" "EGRESS IP" "EXPECTED" "RESULT"
-for name in via-nat-gateway via-nat-instance via-regional-nat; do
+for name in via-zonal-nat-gateway via-nat-instance via-regional-nat; do
   id=$(jq -r --arg k "$name" '.[$k]' <<<"$ids_json")
   exp=$(expected_for "$name")
 

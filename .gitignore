@@ -45,3 +45,6 @@ terraform.rc
 
 # macOS
 .DS_Store
+
+# direnv: local AWS profile and region
+.envrc
