@@ -18,7 +18,6 @@ resource "aws_eip" "nat_instance" {
 }
 
 resource "aws_security_group" "nat_instance" {
-  #checkov:skip=CKV_AWS_382:A NAT forwards to any destination, that is the job description
   vpc_id = aws_vpc.main.id
 
   name        = "${local.env}-sg-${local.reg}-inat"
@@ -48,7 +47,6 @@ resource "aws_security_group" "nat_instance" {
 }
 
 resource "aws_instance" "nat_instance" {
-  #checkov:skip=CKV_AWS_126:Detailed monitoring is not worth paying for in a lab that lives a few hours
   ami                    = data.aws_ssm_parameter.al2023_arm64.value
   instance_type          = "t4g.nano"
   ebs_optimized          = true
@@ -88,7 +86,7 @@ resource "aws_instance" "nat_instance" {
 
     # 3. Masquerade private subnet B traffic leaving the primary interface (ens5 on AL2023, not eth0)
     IFACE=$(ip -o -4 route show to default | awk '{print $5}')
-    iptables -t nat -A POSTROUTING -o "$IFACE" -s ${aws_subnet.private_inat.cidr_block} -j MASQUERADE
+    iptables -t nat -A POSTROUTING -o "$IFACE" -s "10.0.10.0/24" -j MASQUERADE
 
     # 4. Persist ONLY our rules, then start the service (order matters, see "Gotchas")
     iptables-save > /etc/sysconfig/iptables
