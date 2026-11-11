@@ -49,7 +49,6 @@ One file per door: each NAT lives with its own private subnet and route table, s
 | `test-instances.tf` | SSM role and instance profile, HTTPS-only security group, one test instance per private subnet |
 | `outputs.tf` | NAT IDs, public IPs and test instance IDs |
 | `scripts/check-egress.sh` | Asks each test instance for its public IP and checks it against the expected NAT |
-| `AUDIT.md` | Well-Architected and security-by-design review of this lab |
 
 ## Naming and tags
 
@@ -112,7 +111,7 @@ curl -s https://checkip.amazonaws.com
 - Test instances can only reach the outside on tcp/443
 - The NAT instance only accepts, and only masquerades, traffic from private subnet B
 
-Deliberately left out for a lab that lives a few hours: VPC Flow Logs, detailed monitoring, a pinned AMI and a remote state backend. The reasoning is in [AUDIT.md](AUDIT.md).
+Deliberately left out for a lab that lives a few hours: VPC Flow Logs, detailed monitoring, a pinned AMI and a remote state backend.
 
 ## Cost
 
