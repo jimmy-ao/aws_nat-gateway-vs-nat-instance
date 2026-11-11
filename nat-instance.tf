@@ -86,7 +86,7 @@ resource "aws_instance" "nat_instance" {
 
     # 3. Masquerade private subnet B traffic leaving the primary interface (ens5 on AL2023, not eth0)
     IFACE=$(ip -o -4 route show to default | awk '{print $5}')
-    iptables -t nat -A POSTROUTING -o "$IFACE" -s "10.0.10.0/24" -j MASQUERADE
+    iptables -t nat -A POSTROUTING -o "$IFACE" -s ${aws_subnet.private_inat.cidr_block} -j MASQUERADE
 
     # 4. Persist ONLY our rules, then start the service (order matters, see "Gotchas")
     iptables-save > /etc/sysconfig/iptables
